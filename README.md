@@ -29,5 +29,7 @@ set container name fastnetmon image 'ghcr.io/pavel-odintsov/fastnetmon-community
 set container name fastnetmon memory '2048'
 set container name fastnetmon volume configs destination '/etc/fastnetmon'
 set container name fastnetmon volume configs source '/config/containers/fastnetmon'
+set container name fastnetmon volume log destination '/var/log/fastnetmon.log'
+set container name fastnetmon volume log source '/var/log/fastnetmon.log'
 
 ```
