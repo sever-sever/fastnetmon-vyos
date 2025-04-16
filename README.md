@@ -128,7 +128,7 @@ table inet vyos_fastnetmon {
 
 	chain forward {
 		type filter hook forward priority filter; policy accept;
-		ip saddr @banned_ips counter packets 0 bytes 0 drop
+		ip daddr @banned_ips counter packets 0 bytes 0 drop
 	}
 }
 [edit]

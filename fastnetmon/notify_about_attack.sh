@@ -42,7 +42,7 @@ ensure_nft_setup() {
 
     # Ensure drop rule exists
     if ! nft list chain inet "${table_name}" "${chain_name}" | grep -q "@${set_name} drop"; then
-        nft add rule inet "${table_name}" "${chain_name}" ip saddr @"${set_name}" counter drop
+        nft add rule inet "${table_name}" "${chain_name}" ip daddr @"${set_name}" counter drop
     fi
 }
 
