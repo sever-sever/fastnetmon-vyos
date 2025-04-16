@@ -95,6 +95,8 @@ curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubuserconten
 curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/networks_list
 curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/excluded_networks_list
 curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/notify_about_attack.sh
+
+chmod +x /config/containers/fastnetmon/notify_about_attack.sh
 ```
 ## 3.3. configuration
 ```

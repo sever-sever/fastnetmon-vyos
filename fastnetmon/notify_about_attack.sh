@@ -19,7 +19,7 @@ table_name="vyos_fastnetmon"
 set_name="banned_ips"
 chain_name="forward"
 hook_name="forward"
-timeouit="1h"
+timeout="1h"
 
 
 # Create nftables table and set if they don't exist
@@ -41,8 +41,8 @@ ensure_nft_setup() {
     fi
 
     # Ensure drop rule exists
-    if ! nft list chain inet "$table_name" "$chain_name" | grep -q "@$set_name drop"; then
-        nft add rule inet "$table_name" "$chain_name" ip saddr @"$set_name" counter drop
+    if ! nft list chain inet "${table_name}" "${chain_name}" | grep -q "@${set_name} drop"; then
+        nft add rule inet "${table_name}" "${chain_name}" ip saddr @"${set_name}" counter drop
     fi
 }
 
@@ -50,12 +50,12 @@ ensure_nft_setup() {
 # action ban
 if [ "${action}" = "ban" ]; then
     ensure_nft_setup
-    nft add element inet "$table_name" "$set_name" { $ip timeout 1h }
+    nft add element inet "${table_name}" "${set_name}" { $ip timeout $timeout }
     exit 0
 fi
 
 # action unban
 if [ "${action}" = "unban" ]; then
-    nft delete element inet "$table_name" "$set_name" { $ip }
+    nft delete element inet "${table_name}" "${set_name}" { $ip }
     exit 0
 fi
