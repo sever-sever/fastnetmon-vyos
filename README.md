@@ -13,6 +13,7 @@ The FastNetMon container and VyOS integration
   - [3.1. build-container](#31-build-container)
   - [3.2. pre-config](#32-pre-config)
   - [3.3. configuration](#33-configuration)
+  - [3.4. Check](#34-check)
 
 
 
@@ -111,4 +112,41 @@ set container name fastnetmon image 'localhost/vyos-fastnetmon:1.2.9'
 set container name fastnetmon memory '2048'
 set container name fastnetmon volume configs destination '/etc/fastnetmon'
 set container name fastnetmon volume configs source '/config/containers/fastnetmon'
+```
+## 3.4. Check
+
+Firewall:
+```
+vyos@r14# sudo nft list table inet vyos_fastnetmon
+table inet vyos_fastnetmon {
+	set banned_ips {
+		type ipv4_addr
+		flags timeout
+		elements = { 192.168.122.14 timeout 1h expires 59m40s114ms }
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		ip saddr @banned_ips counter packets 0 bytes 0 drop
+	}
+}
+[edit]
+vyos@r14#
+
+```
+Routing:
+```
+vyos@r14# run show ip route 192.168.122.14
+Routing entry for 192.168.122.14/32
+  Known via "kernel", distance 0, metric 0
+  Last update 00:00:50 ago
+  * unreachable (blackhole), weight 1
+
+Routing entry for 192.168.122.14/32
+  Known via "local", distance 0, metric 0, best
+  Last update 11:07:39 ago
+  * directly connected, eth0, weight 1
+
+[edit]
+vyos@r14#
 ```

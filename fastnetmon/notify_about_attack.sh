@@ -46,16 +46,25 @@ ensure_nft_setup() {
     fi
 }
 
+add_ip_to_blackhole() {
+    ip route add blackhole ${ip}/32
+}
+
+delete_ip_from_blackhole() {
+    ip route del blackhole ${ip}/32
+}
 
 # action ban
 if [ "${action}" = "ban" ]; then
     ensure_nft_setup
     nft add element inet "${table_name}" "${set_name}" { $ip timeout $timeout }
+    add_ip_to_blackhole
     exit 0
 fi
 
 # action unban
 if [ "${action}" = "unban" ]; then
     nft delete element inet "${table_name}" "${set_name}" { $ip }
+    delete_ip_from_blackhole
     exit 0
 fi
