@@ -114,6 +114,7 @@ set container name fastnetmon volume configs destination '/etc/fastnetmon'
 set container name fastnetmon volume configs source '/config/containers/fastnetmon'
 ```
 ## 3.4. Check
+Wait for attack for some host, in example attack to the IP 192.168.122.14
 
 Firewall:
 ```
