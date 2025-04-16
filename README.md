@@ -104,7 +104,7 @@ set system sflow server 127.0.0.1
 
 set container name fastnetmon allow-host-networks
 set container name fastnetmon command '/usr/bin/fastnetmon --configuration_file /etc/fastnetmon/fastnetmon_sflow.conf'
-set container name fastnetmon image 'localhost/vyos-fastnemon:1.2.9'
+set container name fastnetmon image 'localhost/vyos-fastnetmon:1.2.9'
 set container name fastnetmon memory '2048'
 set container name fastnetmon volume configs destination '/etc/fastnetmon'
 set container name fastnetmon volume configs source '/config/containers/fastnetmon'
