@@ -1,6 +1,7 @@
 # fastnetmon-vyos
 The FastNetMon container and VyOS integration 
 - [fastnetmon-vyos](#fastnetmon-vyos)
+- [make-binaries](#make-binaries)
 - [1. sflow-mode](#1-sflow-mode)
   - [1.1. build-container](#11-build-container)
   - [1.2. pre-config](#12-pre-config)
@@ -11,6 +12,11 @@ The FastNetMon container and VyOS integration
   - [2.2. op-mode](#22-op-mode)
   - [2.3. configuration](#23-configuration)
 
+# make-binaries
+Binaries could be used instead of the ban bash script.
+```
+make
+```
 
 # 1. sflow-mode
 ## 1.1. build-container
@@ -122,4 +128,3 @@ set container name fastnetmon memory '2048'
 set container name fastnetmon volume configs destination '/etc/fastnetmon'
 set container name fastnetmon volume configs source '/config/containers/fastnetmon'
 ```
-

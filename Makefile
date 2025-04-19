@@ -1,8 +1,7 @@
 CC = gcc
 SRC_DIR = src
-# SOURCES = $(SRC_DIR)/main.c $(SRC_DIR)/nft_operations.c $(SRC_DIR)/iproute_operations.c
 CFLAGS = -Wall -Wextra
-BIN_DIR = fastnetmon
+BIN_DIR = build
 
 SRC_NFT = $(SRC_DIR)/main_nft.c $(SRC_DIR)/nft_operations.c
 SRC_IPROUTE = $(SRC_DIR)/main_iproute.c ${SRC_DIR}/iproute_operations.c
@@ -16,9 +15,11 @@ nft: $(BIN_NFT)
 iproute: $(BIN_IPROUTE)
 
 $(BIN_NFT): $(SRC_NFT)
+	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $(SRC_NFT)
 
 $(BIN_IPROUTE): $(SRC_IPROUTE)
+	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $(SRC_IPROUTE)
 
 clean:
