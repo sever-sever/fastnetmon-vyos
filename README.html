@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>fastnetmon-vyos</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="fastnetmon-vyos">fastnetmon-vyos</h1>
+<p>The FastNetMon container and VyOS integration</p>
+<ul>
+<li><a href="#fastnetmon-vyos">fastnetmon-vyos</a></li>
+<li><a href="#1-sflow-mode">1. sflow-mode</a>
+<ul>
+<li><a href="#11-pre-config">1.1. pre-config</a></li>
+<li><a href="#12-op-mode">1.2. op-mode</a></li>
+<li><a href="#13-configuration">1.3. configuration</a></li>
+</ul>
+</li>
+<li><a href="#2-mirror-mode">2. mirror-mode</a>
+<ul>
+<li><a href="#21-pre-config">2.1. pre-config</a></li>
+<li><a href="#22-op-mode">2.2. op-mode</a></li>
+<li><a href="#23-configuration">2.3. configuration</a></li>
+</ul>
+</li>
+<li><a href="#3-sflow-firewall">3. sflow-firewall</a>
+<ul>
+<li><a href="#31-build-container">3.1. build-container</a></li>
+<li><a href="#32-pre-config">3.2. pre-config</a></li>
+<li><a href="#33-configuration">3.3. configuration</a></li>
+<li><a href="#34-check">3.4. Check</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="1-sflow-mode">1. sflow-mode</h1>
+<p>In the <code>sFlow</code> mode we get sFlow statistics from the VyOS router and send it to the FastNetMon container.</p>
+<h2 id="11-pre-config">1.1. pre-config</h2>
+<p>Download required configuration files or make them manually.</p>
+<pre><code># pre-config
+mkdir -p /config/containers/fastnetmon
+
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/fastnetmon_sflow.conf
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/excluded_networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/notify_about_attack.sh
+</code></pre>
+<h2 id="12-op-mode">1.2. op-mode</h2>
+<p>Add container image, before we can use it in the container configuration:</p>
+<pre><code>add container image ghcr.io/pavel-odintsov/fastnetmon-community:1.2.9
+</code></pre>
+<h2 id="13-configuration">1.3. configuration</h2>
+<pre><code>set system sflow interface 'eth0'
+set system sflow interface 'eth1'
+set system sflow server 127.0.0.1
+
+set container name fastnetmon allow-host-networks
+set container name fastnetmon command '/usr/bin/fastnetmon --configuration_file /etc/fastnetmon/fastnetmon_sflow.conf'
+set container name fastnetmon image 'ghcr.io/pavel-odintsov/fastnetmon-community:1.2.9'
+set container name fastnetmon memory '2048'
+set container name fastnetmon volume configs destination '/etc/fastnetmon'
+set container name fastnetmon volume configs source '/config/containers/fastnetmon'
+</code></pre>
+<h1 id="2-mirror-mode">2. mirror-mode</h1>
+<h2 id="21-pre-config">2.1. pre-config</h2>
+<p>Download required configuration files or make them manually.</p>
+<pre><code># pre-config
+mkdir -p /config/containers/fastnetmon
+
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/fastnetmon_mirror.conf
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/excluded_networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/notify_about_attack.sh
+</code></pre>
+<h2 id="22-op-mode">2.2. op-mode</h2>
+<p>Add container image, before we can use it in the container configuration:</p>
+<pre><code>add container image ghcr.io/pavel-odintsov/fastnetmon-community:1.2.9
+</code></pre>
+<h2 id="23-configuration">2.3. configuration</h2>
+<pre><code>set container name fastnetmon allow-host-networks
+set container name fastnetmon command '/usr/bin/fastnetmon --configuration_file /etc/fastnetmon/fastnetmon_mirror.conf'
+set container name fastnetmon image 'ghcr.io/pavel-odintsov/fastnetmon-community:1.2.9'
+set container name fastnetmon memory '2048'
+set container name fastnetmon volume configs destination '/etc/fastnetmon'
+set container name fastnetmon volume configs source '/config/containers/fastnetmon'
+</code></pre>
+<h1 id="3-sflow-firewall">3. sflow-firewall</h1>
+<h2 id="31-build-container">3.1. build-container</h2>
+<p>Build own container based on the official FastNetMon Dockerfile.</p>
+<p>We need additional packages <code>iproute2</code> and <code>nftables</code> to add filters:</p>
+<pre><code>curl -O https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/Dockerfile
+
+sudo podman build --net host --tag vyos-fastnetmon:1.2.9 -f Dockerfile
+</code></pre>
+<h2 id="32-pre-config">3.2. pre-config</h2>
+<p>Download required configuration files or make them manually.</p>
+<pre><code># pre-config
+mkdir -p /config/containers/fastnetmon
+
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/fastnetmon_sflow.conf
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/excluded_networks_list
+curl -O --output-dir /config/containers/fastnetmon/ https://raw.githubusercontent.com/sever-sever/fastnetmon-vyos/refs/heads/main/fastnetmon/notify_about_attack.sh
+
+chmod +x /config/containers/fastnetmon/notify_about_attack.sh
+</code></pre>
+<h2 id="33-configuration">3.3. configuration</h2>
+<pre><code>set system sflow interface 'eth0'
+set system sflow interface 'eth1'
+set system sflow server 127.0.0.1
+
+set container name fastnetmon allow-host-networks
+set container name fastnetmon capability 'net-admin'
+set container name fastnetmon command '/usr/bin/fastnetmon --configuration_file /etc/fastnetmon/fastnetmon_sflow.conf'
+set container name fastnetmon image 'localhost/vyos-fastnetmon:1.2.9'
+set container name fastnetmon memory '2048'
+set container name fastnetmon volume configs destination '/etc/fastnetmon'
+set container name fastnetmon volume configs source '/config/containers/fastnetmon'
+</code></pre>
+<h2 id="34-check">3.4. Check</h2>
+<p>Wait for attack for some host, in example attack to the IP 192.168.122.14</p>
+<p>Firewall:</p>
+<pre><code>vyos@r14# sudo nft list table inet vyos_fastnetmon
+table inet vyos_fastnetmon {
+	set banned_ips {
+		type ipv4_addr
+		flags timeout
+		elements = { 192.168.122.14 timeout 1h expires 59m40s114ms }
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		ip daddr @banned_ips counter packets 0 bytes 0 drop
+	}
+}
+[edit]
+vyos@r14#
+
+</code></pre>
+<p>Routing:</p>
+<pre><code>vyos@r14# run show ip route 192.168.122.14
+Routing entry for 192.168.122.14/32
+  Known via &quot;kernel&quot;, distance 0, metric 0
+  Last update 00:00:50 ago
+  * unreachable (blackhole), weight 1
+
+Routing entry for 192.168.122.14/32
+  Known via &quot;local&quot;, distance 0, metric 0, best
+  Last update 11:07:39 ago
+  * directly connected, eth0, weight 1
+
+[edit]
+vyos@r14#
+</code></pre>
+
+            
+            
+        </body>
+        </html>
