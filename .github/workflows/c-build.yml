@@ -1,0 +1,42 @@
+name: C Build and Test Binaries
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+      # with:
+      #   repository: sever-sever/fastnetmon-vyos
+
+    - name: make binaries
+      run: make
+
+    - name: ls binary
+      run: |
+        set -eux
+        ls build/
+
+    # Requires to add cap NET_ADMIN to check firewall and iproute2
+    - name: Run test in privileged container
+      run: |
+        docker run --rm --cap-add=NET_ADMIN \
+          -v "${PWD}:/code" \
+          -w /code \
+          ubuntu:24.04 bash -c '
+            set -eux
+            apt update && apt install -y iproute2 nftables
+            dpkg -l | grep -e "nft" -e "iproute"
+            ./build/iproute_decision 192.0.2.1 inbound 5555 ban
+            ./build/iproute_decision 2001:db8::1 inbound 5555 ban
+            ./build/nft_decision 192.0.2.1 inbound 5555 ban
+            ./build/nft_decision 2001:db8::1 inbound 5555 ban
+            ip route
+            ip -6 route
+            nft list ruleset
+          '
